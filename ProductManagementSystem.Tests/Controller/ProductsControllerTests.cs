@@ -22,9 +22,8 @@ namespace ProductManagementSystem.Tests.Controller
         [SetUp]
         public void Setup()
         {
-            var loggerMock = new Mock<ILogger<ProductsController>>();
             _mockProductService = new Mock<IProductService>();
-            _controller = new ProductsController(_mockProductService.Object, loggerMock.Object);
+            _controller = new ProductsController(_mockProductService.Object);
         }
 
         [Test]

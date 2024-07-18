@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using ProductManagementSystem.Filter;
+using ProductManagementSystem.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -95,6 +96,8 @@ app.Use(async (context, next) =>
 
     await next();
 });
+//Adding this custome middleware to catch exceptions globally instead of dealing it in every controller.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

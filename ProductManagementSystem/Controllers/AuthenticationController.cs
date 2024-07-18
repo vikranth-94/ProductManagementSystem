@@ -20,39 +20,26 @@ namespace ProductManagementSystem.Controllers
         private readonly IConfiguration _configuration;
         private readonly IAuthService _authService;
         private readonly ProductDBContext _context;
-        private readonly ILogger<AuthenticationController> _logger;
 
-        public AuthenticationController( IConfiguration configuration,IAuthService authservice,ProductDBContext context, ILogger<AuthenticationController> logger)
+        public AuthenticationController( IConfiguration configuration,IAuthService authservice,ProductDBContext context)
         {
             _configuration = configuration;
             _authService = authservice;
             _context = context;
-            _logger = logger;
         }
 
        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] User user)
         {
-            try
-            {
                 await _authService.RegisterAsync(user);
                 return Ok(new { Message = "User registered successfully!" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error");
-            }
-
         }
 
         
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] User user)
         {
-            try
-            {
                 var dbUser = await _authService.LoginAsync(user);
                 if (dbUser == null)
                 {
@@ -71,12 +58,6 @@ namespace ProductManagementSystem.Controllers
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var tokenString = tokenHandler.WriteToken(token);
                 return Ok(new { Token = tokenString });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error");
-            }
 
         }
     }

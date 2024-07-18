@@ -14,27 +14,17 @@ namespace ProductManagementAPI.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _productService;
-        private readonly ILogger<ProductsController> _logger;
-        public ProductsController(IProductService productService, ILogger<ProductsController> logger)
+        public ProductsController(IProductService productService)
         {
             _productService = productService;
-            _logger = logger;
         }
 
         [Authorize]
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            try
-            {
-                var createdProduct = await _productService.AddProductAsync(product);
-                return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+            var createdProduct = await _productService.AddProductAsync(product);
+            return CreatedAtAction(nameof(GetProduct), new { id = createdProduct.Id }, createdProduct);
 
         }
 
@@ -42,16 +32,8 @@ namespace ProductManagementAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
         {
-            try
-            {
-                var products = await _productService.GetAllProductDetailsAsync();
-                return Ok(products);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+            var products = await _productService.GetAllProductDetailsAsync();
+            return Ok(products);
 
         }
 
@@ -59,38 +41,21 @@ namespace ProductManagementAPI.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            try
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)//input validation
             {
-                var product = await _productService.GetProductByIdAsync(id);
-                if (product == null)//input validation
-                {
-                    return NotFound();
-                }
-
-                return Ok(product);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
+                return NotFound();
             }
 
+            return Ok(product);
         }
 
         [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            try
-            {
-                await _productService.DeleteProductAsync(id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+            await _productService.DeleteProductAsync(id);
+            return NoContent();
 
         }
 
@@ -102,16 +67,8 @@ namespace ProductManagementAPI.Controllers
             {
                 return BadRequest();
             }
-            try
-            {
-                await _productService.UpdateProductAsync(product);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+            await _productService.UpdateProductAsync(product);
+            return NoContent();
 
         }
 
@@ -119,32 +76,19 @@ namespace ProductManagementAPI.Controllers
         [HttpPut("decrement-stock/{id}/{amount}")]
         public async Task<IActionResult> DecrementStock(int id, int amount)
         {
-            try
-            {
-                await _productService.DecrementStockAsync(id, amount);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+            await _productService.DecrementStockAsync(id, amount);
+            return Ok();
+
         }
 
         [Authorize]
         [HttpPut("add-to-stock/{id}/{amount}")]
         public async Task<IActionResult> AddToStock(int id, int amount)
         {
-            try
-            {
-                await _productService.AddToStockAsync(id, amount);
-                return Ok();
-            }            
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing your request.");
-                return StatusCode(500, "Internal server error. Please try again later.");
-            }
+
+            await _productService.AddToStockAsync(id, amount);
+            return Ok();
+
         }
     }
 }
