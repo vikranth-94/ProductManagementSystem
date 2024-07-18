@@ -21,6 +21,10 @@ Application Flow:
    Note:
    1. username and password are required fields for authentication process.
    2. Name,Description,Category,Price,AvailableStock are the required fields for product endpoints.
+  
+
+in the latest commit optimized the error handling and logging.
+added middleware and managed logging and exception handling there instead of repeating it in all the action methods.
       
 
 
